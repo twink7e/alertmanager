@@ -242,6 +242,12 @@ func resolveFilepaths(baseDir string, cfg *Config) {
 		for _, cfg := range receiver.WechatConfigs {
 			cfg.HTTPConfig.SetDirectory(baseDir)
 		}
+		for _, cfg := range receiver.YunpianSendCallConfigs {
+			cfg.HTTPConfig.SetDirectory(baseDir)
+		}
+		for _, cfg := range receiver.YunpianSendSMSConfigs {
+			cfg.HTTPConfig.SetDirectory(baseDir)
+		}
 	}
 }
 
@@ -425,6 +431,28 @@ func (c *Config) UnmarshalYAML(unmarshal func(interface{}) error) error {
 
 			if !strings.HasSuffix(wcc.APIURL.Path, "/") {
 				wcc.APIURL.Path += "/"
+			}
+		}
+		for _, call := range rcv.YunpianSendCallConfigs {
+			if call.HTTPConfig == nil {
+				call.HTTPConfig = c.Global.HTTPConfig
+			}
+			if call.APIkey == "" {
+				return fmt.Errorf("no yunpian API set")
+			}
+			if call.MobileNums == "" {
+				return fmt.Errorf("no yunpian phonenum set")
+			}
+		}
+		for _, sms := range rcv.YunpianSendCallConfigs {
+			if sms.HTTPConfig == nil {
+				sms.HTTPConfig = c.Global.HTTPConfig
+			}
+			if sms.APIkey == "" {
+				return fmt.Errorf("no yunpian API set")
+			}
+			if sms.MobileNums == "" {
+				return fmt.Errorf("no yunpian phonenum set")
 			}
 		}
 		for _, voc := range rcv.VictorOpsConfigs {
