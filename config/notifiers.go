@@ -103,6 +103,20 @@ var (
 		AgentID: `{{ template "wechat.default.agent_id" . }}`,
 	}
 
+	DefaultYunpianSendCallConfig = YunpianSendCallConfig{
+		NotifierConfig: NotifierConfig{
+			VSendResolved: false,
+		},
+	}
+
+	DefaultYunpianSendSMSConfig = YunpianSendSMSConfig{
+		NotifierConfig: NotifierConfig{
+			VSendResolved: false,
+		},
+		Text:   `{{ template "yunpian_sendsms.default.text" . }}`,
+		Mobile: `{{ template "yunpian_sendsms.default.mobile" . }}`,
+	}
+
 	// DefaultVictorOpsConfig defines default values for VictorOps configurations.
 	DefaultVictorOpsConfig = VictorOpsConfig{
 		NotifierConfig: NotifierConfig{
@@ -427,6 +441,42 @@ func (c *WechatConfig) UnmarshalYAML(unmarshal func(interface{}) error) error {
 		return errors.Errorf("WeChat message type %q does not match valid options %s", c.MessageType, wechatValidTypesRe)
 	}
 
+	return nil
+}
+
+type YunpianSendCallConfig struct {
+	HTTPConfig     *commoncfg.HTTPClientConfig `yaml:"http_config,omitempty" json:"http_config,omitempty"`
+	NotifierConfig `yaml:",inline" json:",inline"`
+	APIkey         Secret `yaml:"apikey,omitempty" json:"apikey,omitempty"`
+	MobileNums     string `yaml:"mobile,omitempty" json:"mobile,omitempty"`
+	Code           int    `yaml:"code,omitempty" json:"code,omitempty"`
+}
+
+// UnmarshalYAML implements the yaml.Unmarshaler interface.
+func (c *YunpianSendCallConfig) UnmarshalYAML(unmarshal func(interface{}) error) error {
+	*c = DefaultYunpianSendCallConfig
+	type plain YunpianSendCallConfig
+	if err := unmarshal((*plain)(c)); err != nil {
+		return err
+	}
+	return nil
+}
+
+type YunpianSendSMSConfig struct {
+	HTTPConfig     *commoncfg.HTTPClientConfig `yaml:"http_config,omitempty" json:"http_config,omitempty"`
+	NotifierConfig `yaml:",inline" json:",inline"`
+	APIkey         Secret `yaml:"apikey,omitempty" json:"apikey,omitempty"`
+	Mobile         string `yaml:"mobile,omitempty" json:"mobile,omitempty"`
+	Text           string `yaml:"text,omitempty" json:"text,omitempty"`
+}
+
+// UnmarshalYAML implements the yaml.Unmarshaler interface.
+func (c *YunpianSendSMSConfig) UnmarshalYAML(unmarshal func(interface{}) error) error {
+	*c = DefaultYunpianSendSMSConfig
+	type plain YunpianSendSMSConfig
+	if err := unmarshal((*plain)(c)); err != nil {
+		return err
+	}
 	return nil
 }
 

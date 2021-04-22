@@ -172,7 +172,6 @@ func (n *Notifier) Notify(ctx context.Context, as ...*types.Alert) (bool, error)
 	if err != nil {
 		return true, err
 	}
-
 	resp, err := n.client.Do(req.WithContext(ctx))
 	if err != nil {
 		return true, notify.RedactURL(err)

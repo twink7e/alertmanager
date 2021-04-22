@@ -1,16 +1,35 @@
+global:
+  resolve_timeout: 5m
+  http_config:
+    follow_redirects: true
+  smtp_hello: localhost
+  smtp_require_tls: true
+  pagerduty_url: https://events.pagerduty.com/v2/enqueue
+  opsgenie_api_url: https://api.opsgenie.com/
+  wechat_api_url: https://qyapi.weixin.qq.com/cgi-bin/
+  victorops_api_url: https://alert.victorops.com/integrations/generic/20131114/alert/
 route:
-  group_by: ['alertname']
+  receiver: sendcall
+  group_by:
+  - alertname
+  continue: false
   group_wait: 30s
   group_interval: 5m
   repeat_interval: 1h
-  receiver: 'web.hook'
-receivers:
-- name: 'web.hook'
-  webhook_configs:
-  - url: 'http://127.0.0.1:5001/'
 inhibit_rules:
-  - source_match:
-      severity: 'critical'
-    target_match:
-      severity: 'warning'
-    equal: ['alertname', 'dev', 'instance']
+- source_match:
+    severity: critical
+  target_match:
+    severity: warning
+  equal:
+  - alertname
+  - dev
+  - instance
+receivers:
+- name: sendcall
+  yunpian_sendcall_configs:
+  - send_resolved: false
+    apikey: 1e10cf232e873e5aa801b7dd581c8773
+    mobile: 17610631273
+    code: 2011
+templates: []

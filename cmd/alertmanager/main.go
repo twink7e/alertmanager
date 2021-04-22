@@ -57,6 +57,8 @@ import (
 	"github.com/prometheus/alertmanager/notify/victorops"
 	"github.com/prometheus/alertmanager/notify/webhook"
 	"github.com/prometheus/alertmanager/notify/wechat"
+	"github.com/prometheus/alertmanager/notify/yunpian_sendcall"
+	"github.com/prometheus/alertmanager/notify/yunpian_sendsms"
 	"github.com/prometheus/alertmanager/provider/mem"
 	"github.com/prometheus/alertmanager/silence"
 	"github.com/prometheus/alertmanager/template"
@@ -155,6 +157,12 @@ func buildReceiverIntegrations(nc *config.Receiver, tmpl *template.Template, log
 	}
 	for i, c := range nc.WechatConfigs {
 		add("wechat", i, c, func(l log.Logger) (notify.Notifier, error) { return wechat.New(c, tmpl, l) })
+	}
+	for i, c := range nc.YunpianSendCallConfigs {
+		add("yunpian_sendcall", i, c, func(l log.Logger) (notify.Notifier, error) { return yunpian_sendcall.New(c, tmpl, l) })
+	}
+	for i, c := range nc.YunpianSendSMSConfigs {
+		add("yunpian_sendsms", i, c, func(l log.Logger) (notify.Notifier, error) { return yunpian_sendsms.New(c, tmpl, l) })
 	}
 	for i, c := range nc.SlackConfigs {
 		add("slack", i, c, func(l log.Logger) (notify.Notifier, error) { return slack.New(c, tmpl, l) })
